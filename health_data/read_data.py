@@ -23,6 +23,9 @@ def main():
         file_texts,
         embedding=embeddings
     )
+    retriever = vector_store.as_retriever()
 
 
 main()
+
+

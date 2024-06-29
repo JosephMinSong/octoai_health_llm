@@ -1,5 +1,9 @@
 import requests
 from bs4 import BeautifulSoup
+from langchain_community.embeddings import HuggingFaceEmbeddings
+from langchain.vectorstores import FAISS
+
+
 
 
 url = 'https://www.who.int/news-room/fact-sheets/detail/mental-disorders'
@@ -34,3 +38,10 @@ with open('parsed_content.txt', 'w') as output_file:
             output_file.write(next_sibling.get_text() + '\n')
             next_sibling = next_sibling.find_next_sibling()
         output_file.write('\n')
+
+embeddings = HuggingFaceEmbeddings()
+
+vector_store = FAISS.from_documents(
+    parsed_content,
+    embedding=embeddings
+)
