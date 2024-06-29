@@ -1,7 +1,7 @@
 import os
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.schema import Document
-from langchain_community.embeddings import HuggingFaceEmbeddings
+from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
 
 
@@ -15,8 +15,9 @@ def main():
         text_splitter = CharacterTextSplitter.from_tiktoken_encoder(
             chunk_size=512, chunk_overlap=64
         )
-        text = text_splitter.split_text(file_text)
-        file_texts.append(Document(page_content=text))
+        chunks = text_splitter.split_text(file_text)
+        for chunk in chunks:
+            file_texts.append(Document(page_content=chunk))
 
     embeddings = HuggingFaceEmbeddings()
     vector_store = FAISS.from_documents(
