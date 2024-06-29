@@ -3,9 +3,24 @@ from langchain.text_splitter import CharacterTextSplitter
 from langchain.schema import Document
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
+from dotenv import load_dotenv
+from langchain_community.llms.octoai_endpoint import OctoAIEndpoint
+from langchain.prompts import ChatPromptTemplate
+from langchain_core.runnables import RunnablePassthrough
+from langchain_core.output_parsers import StrOutputParser
 
 
 def main():
+    
+    load_dotenv()
+
+    # Access the environment variable
+    OCTOAI_API_TOKEN = os.environ["OCTOAI_API_TOKEN"]
+
+    # Use the environment variable
+    print(f"OCTOAI_API_TOKEN: {OCTOAI_API_TOKEN}")
+
+    
     files = os.listdir("./health_data_txts")
     file_texts = []
 
@@ -25,6 +40,31 @@ def main():
         embedding=embeddings
     )
     retriever = vector_store.as_retriever()
+
+    
+    llm = OctoAIEndpoint(
+        model="meta-llama-3-8b-instruct",
+        max_tokens=1024,
+        presence_penalty=0,
+        temperature=0.1,
+        top_p=0.9,
+    )
+
+    template = """You are a mental health generalist. Use the following pieces of retrieved context to answer the question. If you don't know the answer, just say that you don't know. Use three sentences maximum and keep the answer concise.
+    Question: {question} 
+    Context: {context} 
+    Answer:"""
+    prompt = ChatPromptTemplate.from_template(template)
+
+    chain = (
+        {"context": retriever, "question": RunnablePassthrough()}
+        | prompt
+        | llm
+        | StrOutputParser()
+    )
+
+    result = chain.invoke("What age group gets anxiety the most?")
+    print(result)
 
 
 main()
