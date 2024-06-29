@@ -16,10 +16,6 @@ def main():
 
     # Access the environment variable
     OCTOAI_API_TOKEN = os.environ["OCTOAI_API_TOKEN"]
-
-    # Use the environment variable
-    print(f"OCTOAI_API_TOKEN: {OCTOAI_API_TOKEN}")
-
     
     files = os.listdir("./health_data_txts")
     file_texts = []
