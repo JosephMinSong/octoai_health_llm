@@ -17,9 +17,6 @@ def main():
     # Access the environment variable
     OCTOAI_API_TOKEN = os.environ["OCTOAI_API_TOKEN"]
 
-    # Use the environment variable
-    print(f"OCTOAI_API_TOKEN: {OCTOAI_API_TOKEN}")
-
     
     files = os.listdir("./health_data_txts")
     file_texts = []
@@ -41,7 +38,6 @@ def main():
     )
     retriever = vector_store.as_retriever()
 
-    
     llm = OctoAIEndpoint(
         model="meta-llama-3-8b-instruct",
         max_tokens=1024,
@@ -51,8 +47,8 @@ def main():
     )
 
     template = """You are a mental health generalist. Use the following pieces of retrieved context to answer the question. If you don't know the answer, just say that you don't know. Use three sentences maximum and keep the answer concise.
-    Question: {question} 
-    Context: {context} 
+    Question: {question}
+    Context: {context}
     Answer:"""
     prompt = ChatPromptTemplate.from_template(template)
 
@@ -63,10 +59,8 @@ def main():
         | StrOutputParser()
     )
 
-    result = chain.invoke("What age group gets anxiety the most?")
+    result = chain.invoke("What is schizophrenia?")
     print(result)
 
 
 main()
-
-
